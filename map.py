@@ -3,7 +3,7 @@ def toCharArray(word):
     return [char for char in word]
 
 
-f = open("test2.txt", "r+")
+f = open("test2/test2.txt", "r+")
 
 firstRow = f.readline().split()
 numOfRow = int(firstRow[0])
@@ -34,26 +34,56 @@ def checkBounds(row, col):
     else:
         return True
 
-def putLamp(row, col):
-    mapOfRooms[row][col] = 'x'
-    lamps.append([row, col])
+def putCable(startRow, startCol, endRow, endCol):
+    count = 0
+    incRow = 1
+    incCol = 1
+    if (startRow > endRow):
+        incRow = -1
+    if (startCol > endCol):
+        incCol = -1
+    for x in range(startCol+incCol, endCol, incCol):
+        if mapOfRooms[startRow][x] != 'x':
+            mapOfRooms[startRow][x] = '1'
+            count+=1
+    for y in range(startRow, endRow+incRow, incRow):
+        if mapOfRooms[y][endCol] != 'x':
+            mapOfRooms[y][endCol] = '1'
+            count+=1
 
+    return count
 
-def manhattanDistance(x1, y1, x2, y2):
-    return abs(x1-x2) + abs(y1-y2)
+def putLamp2(row, col):
+    cost = 0
+    if len(lamps) <= 1:
+        mapOfRooms[row][col] = 'x'
+        lamps.append([row, col])
+    else:
+        prevLamp = lamps[len(lamps)-2]
+        lenOfCable = putCable(prevLamp[0], prevLamp[1], row, col)
+        cost = lenOfCable*costOfCable + costOfBulb
+    if (budget - cost >= 0):
+        mapOfRooms[row][col] = 'x'
+        lamps.append([row, col])
+    else:
+        print("no more money")  
 
-def isLampExistAround(row, col):
-    for lamp in lamps:
-        if manhattanDistance(row, lamp[0], col, lamp[1]) < L:
-            print(str(row) + ", " + str(col))
-            print("yaay lamp is found")
-            return True
     
-    return False
+def putLamp(row, col):
+    cost = 0
+    if (len(lamps) > 0):
+        lastLamp = lamps[len(lamps)-1]
+        lenOfCable = putCable(lastLamp[0], lastLamp[1], row, col)
+        cost = lenOfCable*costOfCable + costOfBulb
+    if (budget - cost >= 0):
+        mapOfRooms[row][col] = 'x'
+        lamps.append([row, col])
+    else:
+        print("no more money")
+
 
     
 def checkWall(startRow, startCol, endRow, endCol):
-
     count = 0
     incRow = 1
     incCol = 1
@@ -68,15 +98,15 @@ def checkWall(startRow, startCol, endRow, endCol):
         for x in range(startCol, endCol, incCol):
             countx+=1
             if (checkBounds(y, x)):
+                currentChar = mapOfRooms[y][x]
                 if (countx > radius or county > radius):
                     if (currentChar == 'x'):
-                        print('heyo')
                         return -10000
                 else:
-                    currentChar = mapOfRooms[y][x]
                     if (currentChar == '.'):
                         count += 1
                     elif (currentChar == '#'):
+                        count -= 1
                         break
                     elif (currentChar == 'x'):
                         return -L
@@ -100,8 +130,7 @@ def isOptimal(row, col):
 
     if maxIllum >= L*L*0.8:
         #print(str(row) + ", " + str(col))
-
-        putLamp(row, col)
+        putLamp2(row, col)
         return True
     else:
         return False
@@ -118,7 +147,8 @@ for row in range(numOfRow):
         if currentChar == '.':
             isOptimal(row, col)
 
-newFile = open("out2.txt","a") 
+print(len(lamps))
+newFile = open("test2/out2.txt","a") 
 
 for row in range(numOfRow):
     line = ''
