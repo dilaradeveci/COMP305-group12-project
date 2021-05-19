@@ -1,9 +1,13 @@
 
+inpName = input("Enter file name here (test1, test2, test3, test4): ")
+print(inpName)
+filename = inpName + "/" + inpName + ".txt"
+print(filename)
+outfilename = inpName + "/out" + inpName + ".txt"
+f = open(filename, "r+")
+
 def toCharArray(word):
     return [char for char in word]
-
-
-f = open("test2/test2.txt", "r+")
 
 firstRow = f.readline().split()
 numOfRow = int(firstRow[0])
@@ -53,6 +57,32 @@ def putCable(startRow, startCol, endRow, endCol):
 
     return count
 
+def distance(x1,y1,x2,y2):
+    return abs(x1-x2) + abs(y1-y2)
+
+def putLamp3(endRow, endCol):
+    cost = 0
+    if len(lamps) <= 0:
+        mapOfRooms[row][col] = 'x'
+        lamps.append([row, col])
+    else:
+        minDist = numOfCol+numOfRow
+        nearestLamp = lamps[0]
+        for lamp in lamps:
+            dist = distance(endRow, endCol, lamp[0], lamp[1])
+            if (dist < minDist):
+                nearestLamp = lamp
+                minDist = dist
+
+        cost += minDist * costOfCable + costOfBulb
+        if (budget - cost >= 0):
+            putCable(endRow, endCol, nearestLamp[0], nearestLamp[1])
+            mapOfRooms[row][col] = 'x'
+            lamps.append([row, col])
+        else:
+            print("no more money")  
+
+            
 def putLamp2(row, col):
     cost = 0
     if len(lamps) <= 1:
@@ -67,21 +97,6 @@ def putLamp2(row, col):
         lamps.append([row, col])
     else:
         print("no more money")  
-
-    
-def putLamp(row, col):
-    cost = 0
-    if (len(lamps) > 0):
-        lastLamp = lamps[len(lamps)-1]
-        lenOfCable = putCable(lastLamp[0], lastLamp[1], row, col)
-        cost = lenOfCable*costOfCable + costOfBulb
-    if (budget - cost >= 0):
-        mapOfRooms[row][col] = 'x'
-        lamps.append([row, col])
-    else:
-        print("no more money")
-
-
     
 def checkWall(startRow, startCol, endRow, endCol):
     count = 0
@@ -129,9 +144,10 @@ def isOptimal(row, col):
     maxIllum += checkWall(row + 1, col - 1, row+ 2 * radius+1, col- 2 * radius-1)
 
     if maxIllum >= L*L*0.8:
-        #print(str(row) + ", " + str(col))
-        putLamp2(row, col)
-        return True
+        #print(str(row) + ", " + str(col)),
+        if (budget > 0):
+            putLamp3(row, col)
+            return True
     else:
         return False
 
@@ -139,6 +155,9 @@ def isOptimal(row, col):
 ## ALGO STARTS
 for row in range(numOfRow):
     for col in range(numOfCol):
+        if budget <= 0:
+            break
+
         if all(x == '#' or x == '-' for x in mapOfRooms[row]) and row < numOfRow - 1:
             if checkBounds(row+1, col):
                 row += 1
@@ -148,7 +167,8 @@ for row in range(numOfRow):
             isOptimal(row, col)
 
 print(len(lamps))
-newFile = open("test2/out2.txt","a") 
+
+newFile = open(outfilename,"a") 
 
 for row in range(numOfRow):
     line = ''
