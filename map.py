@@ -1,3 +1,5 @@
+import timeit
+
 
 inpName = input("Enter file name here (test1, test2, test3, test4): ")
 print(inpName)
@@ -8,6 +10,9 @@ f = open(filename, "r+")
 
 def toCharArray(word):
     return [char for char in word]
+
+start = timeit.default_timer()
+
 
 firstRow = f.readline().split()
 numOfRow = int(firstRow[0])
@@ -60,7 +65,7 @@ def putCable(startRow, startCol, endRow, endCol):
 def distance(x1,y1,x2,y2):
     return abs(x1-x2) + abs(y1-y2)
 
-def putLamp3(endRow, endCol):
+def putLamp(endRow, endCol):
     cost = 0
     if len(lamps) <= 0:
         mapOfRooms[row][col] = 'x'
@@ -82,21 +87,6 @@ def putLamp3(endRow, endCol):
         else:
             print("no more money")  
 
-            
-def putLamp2(row, col):
-    cost = 0
-    if len(lamps) <= 1:
-        mapOfRooms[row][col] = 'x'
-        lamps.append([row, col])
-    else:
-        prevLamp = lamps[len(lamps)-2]
-        lenOfCable = putCable(prevLamp[0], prevLamp[1], row, col)
-        cost = lenOfCable*costOfCable + costOfBulb
-    if (budget - cost >= 0):
-        mapOfRooms[row][col] = 'x'
-        lamps.append([row, col])
-    else:
-        print("no more money")  
     
 def checkWall(startRow, startCol, endRow, endCol):
     count = 0
@@ -146,7 +136,7 @@ def isOptimal(row, col):
     if maxIllum >= L*L*0.8:
         #print(str(row) + ", " + str(col)),
         if (budget > 0):
-            putLamp3(row, col)
+            putLamp(row, col)
             return True
     else:
         return False
@@ -166,6 +156,9 @@ for row in range(numOfRow):
         if currentChar == '.':
             isOptimal(row, col)
 
+stop = timeit.default_timer()
+
+print('Time: ', stop - start) 
 print(len(lamps))
 
 newFile = open(outfilename,"a") 
