@@ -1,6 +1,5 @@
 import timeit
 
-
 inpName = input("Enter file name here (test1, test2, test3, test4): ")
 print(inpName)
 filename = inpName + "/" + inpName + ".txt"
@@ -13,7 +12,6 @@ def toCharArray(word):
 
 start = timeit.default_timer()
 
-
 firstRow = f.readline().split()
 numOfRow = int(firstRow[0])
 numOfCol = int(firstRow[1])
@@ -25,7 +23,6 @@ secondRow = f.readline().split()
 costOfCable = int(secondRow[0])
 costOfBulb = int(secondRow[1])
 budget = int(secondRow[2])
-
 thirdRow = f.readline()
 
 L = 2*radius + 1
@@ -44,28 +41,32 @@ def checkBounds(row, col):
         return True
 
 def putCable(startRow, startCol, endRow, endCol):
-    count = 0
+    discount = 0
     incRow = 1
     incCol = 1
     if (startRow > endRow):
         incRow = -1
     if (startCol > endCol):
         incCol = -1
+
     for x in range(startCol+incCol, endCol, incCol):
+        if mapOfRooms[startRow][x] == '1':
+            discount += 1
         if mapOfRooms[startRow][x] != 'x':
             mapOfRooms[startRow][x] = '1'
-            count+=1
+
     for y in range(startRow, endRow+incRow, incRow):
+        if mapOfRooms[y][endCol] == '1':
+            discount += 1
         if mapOfRooms[y][endCol] != 'x':
             mapOfRooms[y][endCol] = '1'
-            count+=1
-
-    return count
+    return discount
 
 def distance(x1,y1,x2,y2):
     return abs(x1-x2) + abs(y1-y2)
 
 def putLamp(endRow, endCol):
+    global budget
     cost = 0
     if len(lamps) <= 0:
         mapOfRooms[row][col] = 'x'
@@ -81,13 +82,68 @@ def putLamp(endRow, endCol):
 
         cost += minDist * costOfCable + costOfBulb
         if (budget - cost >= 0):
-            putCable(endRow, endCol, nearestLamp[0], nearestLamp[1])
+            cost -= putCable(endRow, endCol, nearestLamp[0], nearestLamp[1])
+            budget -= cost
             mapOfRooms[row][col] = 'x'
             lamps.append([row, col])
         else:
             print("no more money")  
 
-    
+
+def putLamp2(row, col):
+    if len(lamps) <= 0:
+        mapOfRooms[row][col] = 'x'
+        lamps.append([row, col])
+        print("first lamp at: ", row, " ", col)
+    else:
+        nearestLampX = 10
+        nearestLampY = 10
+        dxL = 0
+        dxR = 0
+        dy = 0
+        flag = True
+        while flag:
+            if checkBounds(row - dy - 1, col):
+                dy += 1
+            if checkBounds(row, col + dxR + 1):
+                dxR += 1 
+            if checkBounds(row, col - dxL - 1):
+                dxL += 1
+
+            # upper edge
+            for i in range(-dxL, dxR + 1):
+                if mapOfRooms[row + dy][col + i] == 'x':
+                    flag = False
+                    nearestLampX = col + i
+                    nearestLampY = row + dy
+
+            # left edge
+            for i in range(0, dy + 1):
+                if mapOfRooms[row - i][col - dxL] == 'x': 
+                    flag = False
+                    nearestLampX = col - dxL
+                    nearestLampY = row - i
+
+            # right edge
+            for i in range(0, dy + 1):
+                if mapOfRooms[row - i][col + dxR] == 'x':
+                    flag = False
+                    nearestLampX = col + dxR
+                    nearestLampY = row - i
+
+        cost = distance(col, row, nearestLampX, nearestLampY) * costOfCable + costOfBulb
+        if (budget - cost >= 0):
+            putCable(row, col, nearestLampY, nearestLampX)
+            cost -= putCable(row, col, nearestLampY, nearestLampX)
+            #budget -= cost
+            mapOfRooms[row][col] = 'x'
+            lamps.append([row, col])
+            print("new lamp at: ", row, " ", col)
+        else:
+            print("no more money") 
+
+
+
 def checkWall(startRow, startCol, endRow, endCol):
     count = 0
     incRow = 1
@@ -160,6 +216,7 @@ stop = timeit.default_timer()
 
 print('Time: ', stop - start) 
 print(len(lamps))
+print(budget)
 
 newFile = open(outfilename,"a") 
 
