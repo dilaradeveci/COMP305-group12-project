@@ -29,6 +29,7 @@ secondRow = f.readline().split()
 costOfCable = int(secondRow[0])
 costOfBulb = int(secondRow[1])
 budget = int(secondRow[2])
+print(budget)
 thirdRow = f.readline()
 
 L = 2*radius + 1
@@ -74,6 +75,7 @@ def putLamp(row, col):
         mapOfRooms[row][col] = 'x'
         lamps.append([row, col])
         print("first lamp at: ", row, " ", col)
+        return costOfBulb
     else:
         nearestLampX = 10
         nearestLampY = 10
@@ -111,15 +113,18 @@ def putLamp(row, col):
                     nearestLampY = row - i
 
         cost = distance(col, row, nearestLampX, nearestLampY) * costOfCable + costOfBulb
+        print(cost)
         if (budget - cost >= 0):
             putCable(row, col, nearestLampY, nearestLampX)
             cost -= putCable(row, col, nearestLampY, nearestLampX)
-            #budget -= cost
             mapOfRooms[row][col] = 'x'
             lamps.append([row, col])
             print("new lamp at: ", row, " ", col)
+            print(cost)
+            return cost
         else:
-            print("no more money") 
+            print("no more money")
+            return 0 
 
 
 
@@ -168,19 +173,19 @@ def isOptimal(row, col):
     ## Q4
     maxIllum += checkWall(row + 1, col - 1, row+ 2 * radius+1, col- 2 * radius-1)
 
-    if maxIllum >= L*L*0.8:
+    if maxIllum >= L*L*0.5:
         #print(str(row) + ", " + str(col)),
         if (budget > 0):
-            putLamp(row, col)
-            return True
+            cost = putLamp(row, col)
+            return cost
     else:
-        return False
+        return 0
 
 
 ## ALGO STARTS
 for row in range(numOfRow):
     for col in range(numOfCol):
-        if budget <= 0:
+        if budget <= 0 or budget <= costOfBulb or budget <= costOfCable:
             break
 
         if all(x == '#' or x == '-' for x in mapOfRooms[row]) and row < numOfRow - 1:
@@ -189,7 +194,8 @@ for row in range(numOfRow):
 
         currentChar = mapOfRooms[row][col]
         if currentChar == '.':
-            isOptimal(row, col)
+            cost = isOptimal(row, col)
+            budget -= cost
 
 stop = timeit.default_timer()
 

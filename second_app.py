@@ -77,6 +77,7 @@ def putLamp(endRow, endCol):
     if len(lamps) <= 0:
         mapOfRooms[row][col] = 'x'
         lamps.append([row, col])
+        return costOfBulb
     else:
         minDist = numOfCol+numOfRow
         nearestLamp = lamps[0]
@@ -89,11 +90,12 @@ def putLamp(endRow, endCol):
         cost += minDist * costOfCable + costOfBulb
         if (budget - cost >= 0):
             cost -= putCable(endRow, endCol, nearestLamp[0], nearestLamp[1])
-            budget -= cost
             mapOfRooms[row][col] = 'x'
             lamps.append([row, col])
+            return cost
         else:
             print("no more money")  
+            return 0
 
 
 def checkWall(startRow, startCol, endRow, endCol):
@@ -144,16 +146,15 @@ def isOptimal(row, col):
     if maxIllum >= L*L*0.8:
         #print(str(row) + ", " + str(col)),
         if (budget > 0):
-            putLamp(row, col)
-            return True
+            return putLamp(row, col)
     else:
-        return False
+        return 0
 
 
 ## ALGO STARTS
 for row in range(numOfRow):
     for col in range(numOfCol):
-        if budget <= 0:
+        if budget <= 0 or budget <= costOfBulb or budget <= costOfCable:
             break
 
         if all(x == '#' or x == '-' for x in mapOfRooms[row]) and row < numOfRow - 1:
@@ -162,7 +163,7 @@ for row in range(numOfRow):
 
         currentChar = mapOfRooms[row][col]
         if currentChar == '.':
-            isOptimal(row, col)
+            budget -= isOptimal(row, col)
 
 stop = timeit.default_timer()
 
