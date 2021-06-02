@@ -1,5 +1,6 @@
 import timeit
 
+## file input
 inpName = input("Enter file name here (test1, test2, test3, test4): ")
 print(inpName)
 filename = inpName + "/" + inpName + ".txt"
@@ -7,10 +8,16 @@ print(filename)
 outfilename = inpName + "/out" + inpName + ".txt"
 f = open(filename, "r+")
 
+# helper functions
 def toCharArray(word):
     return [char for char in word]
 
+def distance(x1,y1,x2,y2):
+    return abs(x1-x2) + abs(y1-y2)
+
 start = timeit.default_timer()
+
+# parse inputs
 
 firstRow = f.readline().split()
 numOfRow = int(firstRow[0])
@@ -26,6 +33,8 @@ budget = int(secondRow[2])
 thirdRow = f.readline()
 
 L = 2*radius + 1
+
+# create 2D matrix for the room
 
 mapOfRooms = []
 for i in range(numOfRow):
@@ -62,9 +71,6 @@ def putCable(startRow, startCol, endRow, endCol):
             mapOfRooms[y][endCol] = '1'
     return discount
 
-def distance(x1,y1,x2,y2):
-    return abs(x1-x2) + abs(y1-y2)
-
 def putLamp(endRow, endCol):
     global budget
     cost = 0
@@ -88,60 +94,6 @@ def putLamp(endRow, endCol):
             lamps.append([row, col])
         else:
             print("no more money")  
-
-
-def putLamp2(row, col):
-    if len(lamps) <= 0:
-        mapOfRooms[row][col] = 'x'
-        lamps.append([row, col])
-        print("first lamp at: ", row, " ", col)
-    else:
-        nearestLampX = 10
-        nearestLampY = 10
-        dxL = 0
-        dxR = 0
-        dy = 0
-        flag = True
-        while flag:
-            if checkBounds(row - dy - 1, col):
-                dy += 1
-            if checkBounds(row, col + dxR + 1):
-                dxR += 1 
-            if checkBounds(row, col - dxL - 1):
-                dxL += 1
-
-            # upper edge
-            for i in range(-dxL, dxR + 1):
-                if mapOfRooms[row + dy][col + i] == 'x':
-                    flag = False
-                    nearestLampX = col + i
-                    nearestLampY = row + dy
-
-            # left edge
-            for i in range(0, dy + 1):
-                if mapOfRooms[row - i][col - dxL] == 'x': 
-                    flag = False
-                    nearestLampX = col - dxL
-                    nearestLampY = row - i
-
-            # right edge
-            for i in range(0, dy + 1):
-                if mapOfRooms[row - i][col + dxR] == 'x':
-                    flag = False
-                    nearestLampX = col + dxR
-                    nearestLampY = row - i
-
-        cost = distance(col, row, nearestLampX, nearestLampY) * costOfCable + costOfBulb
-        if (budget - cost >= 0):
-            putCable(row, col, nearestLampY, nearestLampX)
-            cost -= putCable(row, col, nearestLampY, nearestLampX)
-            #budget -= cost
-            mapOfRooms[row][col] = 'x'
-            lamps.append([row, col])
-            print("new lamp at: ", row, " ", col)
-        else:
-            print("no more money") 
-
 
 
 def checkWall(startRow, startCol, endRow, endCol):
@@ -217,6 +169,8 @@ stop = timeit.default_timer()
 print('Time: ', stop - start) 
 print(len(lamps))
 print(budget)
+
+# create a new file for the illuminated room
 
 newFile = open(outfilename,"a") 
 
