@@ -165,19 +165,18 @@ def isOptimal(row, col):
     maxIllum = 0
 
     ## Q1
-    maxIllum += checkWall(row, col, row- 2 * radius -1, col- 2 * radius-1)
+    maxIllum += checkWall(row, col, row - radius - 1, col - radius - 1)
     ## Q2
-    maxIllum += checkWall(row - 1, col + 1, row - 2 * radius -1, col+ 2 * radius+1)
+    maxIllum += checkWall(row - 1, col + 1, row - radius -1, col + radius + 1)
     ## Q3
-    maxIllum += checkWall(row, col, row+ 2 * radius+1, col+ 2 * radius+1)
+    maxIllum += checkWall(row, col, row + radius + 1, col + radius + 1)
     ## Q4
-    maxIllum += checkWall(row + 1, col - 1, row+ 2 * radius+1, col- 2 * radius-1)
+    maxIllum += checkWall(row + 1, col - 1, row + radius+1, col - radius - 1)
 
-    if maxIllum >= L*L*0.5:
+    if maxIllum >= L*L*0.8:
         #print(str(row) + ", " + str(col)),
         if (budget > 0):
-            cost = putLamp(row, col)
-            return cost
+            return putLamp(row, col)
     else:
         return 0
 
