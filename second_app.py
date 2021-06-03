@@ -31,6 +31,7 @@ costOfCable = int(secondRow[0])
 costOfBulb = int(secondRow[1])
 budget = int(secondRow[2])
 thirdRow = f.readline()
+print(budget)
 
 L = 2*radius + 1
 
@@ -75,8 +76,8 @@ def putLamp(endRow, endCol):
     global budget
     cost = 0
     if len(lamps) <= 0:
-        mapOfRooms[row][col] = 'x'
-        lamps.append([row, col])
+        mapOfRooms[endRow][endCol] = 'x'
+        lamps.append([endRow, endCol])
         return costOfBulb
     else:
         minDist = numOfCol+numOfRow
@@ -90,8 +91,8 @@ def putLamp(endRow, endCol):
         cost += minDist * costOfCable + costOfBulb
         if (budget - cost >= 0):
             cost -= putCable(endRow, endCol, nearestLamp[0], nearestLamp[1])
-            mapOfRooms[row][col] = 'x'
-            lamps.append([row, col])
+            mapOfRooms[endRow][endCol] = 'x'
+            lamps.append([endRow, endCol])
             return cost
         else:
             print("no more money")  
@@ -130,23 +131,122 @@ def checkWall(startRow, startCol, endRow, endCol):
 
     return count
 
+def illuminateRight(lamp):
+    startX = lamp[0]
+    startY = lamp[1]
+    for i in range(startY - radius, startY + radius + 1):
+        if (i > numOfRow or i < 0):
+            break
+        for j in range(startX, startX + radius + 1):
+            if (j < 0 or j > numOfCol):
+                break
+            toBeIlluminated = mapOfRooms[j][i]
+            if (toBeIlluminated == '#'):
+                break
+            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-'):
+                if (toBeIlluminated == 'a'):
+                    mapOfRooms[j][i] = 'i'
+                else:
+                    if not (toBeIlluminated == 'i'):
+                        mapOfRooms[j][i] = 'a'   
 
-def isOptimal(row, col):
+def illuminateLeft(lamp):
+    startX = lamp[0]
+    startY = lamp[1]
+    for i in range(startY - radius, startY + radius + 1):
+        if (i > numOfRow or i < 0):
+            break
+        for j in range(startX - 1, startX - radius - 1, -1):
+            if (j < 0 or j > numOfCol):
+                break
+            toBeIlluminated = mapOfRooms[j][i]
+            if (toBeIlluminated == '#'):
+                break
+            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-'):
+                if (toBeIlluminated == 'a'):
+                    mapOfRooms[j][i] = 'i'
+                else:
+                    if not (toBeIlluminated == 'i'):
+                        mapOfRooms[j][i] = 'a'
+
+def illuminateDown(lamp):
+    startX = lamp[0]
+    startY = lamp[1]
+    for i in range(startX - radius, startX + radius + 1):
+        if (i < 0 or i > numOfCol):
+            break
+        for j in range(startY + 1, startY + radius + 1):
+            if (j < 0 or j > numOfRow):
+                break
+            toBeIlluminated = mapOfRooms[i][j]
+            if (toBeIlluminated == '#'):
+                break
+            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-'):
+                if (toBeIlluminated == 'a'):
+                    mapOfRooms[i][j] = 'i'
+                else:
+                    if not (toBeIlluminated == 'i'):
+                        mapOfRooms[i][j] = 'a'
+
+
+def illuminateUp(lamp):
+    startX = lamp[0]
+    startY = lamp[1]
+    for i in range(startX - radius, startX + radius + 1):
+        if (i < 0 or i > numOfCol):
+            break
+        for j in range(startY, startY - radius - 1, -1):
+            if (j < 0 or j > numOfRow):
+                break
+            toBeIlluminated = mapOfRooms[i][j] 
+            if (toBeIlluminated == '#'):
+                break
+            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-'):
+                if (toBeIlluminated == 'a'):
+                    mapOfRooms[i][j] = 'i'
+                else:
+                    if not (toBeIlluminated == 'i'):
+                        mapOfRooms[i][j] = 'a'
+
+
+def returnAtoDot(lamp):
+    startX = lamp[0] - radius
+    startY = lamp[1] - radius
+    for i in range(startY, startY + 2*radius + 1):
+        if (i < 0 or i > numOfRow):
+            break
+        for j in range(startX, startX + 2*radius + 1):
+            if (j < 0 or j > numOfCol):
+                break
+            if mapOfRooms[j][i] == 'a':
+                mapOfRooms[j][i] = '.'
+
+def illuminate(lamp):
+    illuminateLeft(lamp)
+    illuminateRight(lamp)
+    illuminateUp(lamp)
+    illuminateDown(lamp)
+    returnAtoDot(lamp)
+
+def isOptimal(row, col, accuracy = 0.7):
     maxIllum = 0
 
     ## Q1
-    maxIllum += checkWall(row, col, row- 2 * radius -1, col- 2 * radius-1)
+    maxIllum += checkWall(row, col, row - radius - 1, col - radius - 1)
     ## Q2
-    maxIllum += checkWall(row - 1, col + 1, row - 2 * radius -1, col+ 2 * radius+1)
+    maxIllum += checkWall(row - 1, col + 1, row - radius -1, col + radius + 1)
     ## Q3
-    maxIllum += checkWall(row, col, row+ 2 * radius+1, col+ 2 * radius+1)
+    maxIllum += checkWall(row, col, row + radius + 1, col + radius + 1)
     ## Q4
-    maxIllum += checkWall(row + 1, col - 1, row+ 2 * radius+1, col- 2 * radius-1)
+    maxIllum += checkWall(row + 1, col - 1, row + radius+1, col - radius - 1)
 
-    if maxIllum >= L*L*0.8:
+    if maxIllum >= L*L*accuracy:
         #print(str(row) + ", " + str(col)),
         if (budget > 0):
-            return putLamp(row, col)
+            cost = putLamp(row, col)
+            lamp = lamps[len(lamps) - 1]
+            illuminate(lamp)
+            return cost
     else:
         return 0
 
@@ -165,13 +265,30 @@ for row in range(numOfRow):
         if currentChar == '.':
             budget -= isOptimal(row, col)
 
+
+accuracy = 0.8
+while budget >= costOfCable and budget >= costOfBulb and accuracy >= 0:
+    accuracy -= 0.1
+    for row in range(numOfRow):
+        for col in range(numOfCol):
+            if mapOfRooms[row][col] == '.':
+                if budget <= 0 or budget <= costOfBulb or budget <= costOfCable:
+                    break
+                if accuracy < 0.1 and budget >= costOfBulb:
+                    budget -= putLamp(row, col)
+                    lamp = lamps[len(lamps)-1]
+                    illuminate(lamp)
+                budget -= isOptimal(row, col, accuracy)
+
+
 stop = timeit.default_timer()
 
 print('Time: ', stop - start) 
-print(len(lamps))
-print(budget)
+print("Put ", len(lamps), "lamps.")
+print("Left budget is:" ,budget)
 
 # create a new file for the illuminated room
+ill = 0
 
 newFile = open(outfilename,"a") 
 
@@ -179,9 +296,11 @@ for row in range(numOfRow):
     line = ''
     for col in range(numOfCol):
         line += mapOfRooms[row][col]
+        if mapOfRooms[row][col] == 'i':
+            ill = ill + 1
     line+= '\n'
     newFile.write(line)
 
 f.close()
-
-
+newFile.close()
+print("Illuminated area is: ", ill)
