@@ -74,7 +74,7 @@ def putLamp(row, col):
     if len(lamps) <= 0:
         mapOfRooms[row][col] = 'x'
         lamps.append([row, col])
-        print("first lamp at: ", row, " ", col)
+        #print("first lamp at: ", row, " ", col)
         return costOfBulb
     else:
         nearestLampX = 10
@@ -93,34 +93,42 @@ def putLamp(row, col):
 
             # upper edge
             for i in range(-dxL, dxR + 1):
-                if mapOfRooms[row + dy][col + i] == 'x':
-                    flag = False
-                    nearestLampX = col + i
-                    nearestLampY = row + dy
-
+                if checkBounds(row + dy, col + i):
+                    if mapOfRooms[row + dy][col + i] == 'x':
+                        flag = False
+                        nearestLampX = col + i
+                        nearestLampY = row + dy
+                else:
+                    break
             # left edge
             for i in range(0, dy + 1):
-                if mapOfRooms[row - i][col - dxL] == 'x': 
-                    flag = False
-                    nearestLampX = col - dxL
-                    nearestLampY = row - i
+                if checkBounds(row - i, col - dxL):
+                    if mapOfRooms[row - i][col - dxL] == 'x': 
+                        flag = False
+                        nearestLampX = col - dxL
+                        nearestLampY = row - i
+                else:
+                    break
 
             # right edge
             for i in range(0, dy + 1):
-                if mapOfRooms[row - i][col + dxR] == 'x':
-                    flag = False
-                    nearestLampX = col + dxR
-                    nearestLampY = row - i
+                if checkBounds(row - i, col + dxR):
+                    if mapOfRooms[row - i][col + dxR] == 'x':
+                        flag = False
+                        nearestLampX = col + dxR
+                        nearestLampY = row - i
+                else:
+                    break
 
         cost = distance(col, row, nearestLampX, nearestLampY) * costOfCable + costOfBulb
-        print(cost)
+        #print(cost)
         if (budget - cost >= 0):
             putCable(row, col, nearestLampY, nearestLampX)
             cost -= putCable(row, col, nearestLampY, nearestLampX)
             mapOfRooms[row][col] = 'x'
             lamps.append([row, col])
-            print("new lamp at: ", row, " ", col)
-            print(cost)
+            #print("new lamp at: ", row, " ", col)
+            #print(cost)
             return cost
         else:
             print("no more money")
@@ -160,8 +168,104 @@ def checkWall(startRow, startCol, endRow, endCol):
 
     return count
 
+def illuminateRight(lamp):
+    startX = lamp[0]
+    startY = lamp[1]
+    for i in range(startY - radius, startY + radius + 1):
+        if (i > numOfRow or i < 0):
+            break
+        for j in range(startX, startX + radius + 1):
+            if (j < 0 or j > numOfCol):
+                break
+            toBeIlluminated = mapOfRooms[j][i]
+            if (toBeIlluminated == '#'):
+                break
+            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-'):
+                if (toBeIlluminated == 'a'):
+                    mapOfRooms[j][i] = 'i'
+                else:
+                    if not (toBeIlluminated == 'i'):
+                        mapOfRooms[j][i] = 'a'   
 
-def isOptimal(row, col):
+def illuminateLeft(lamp):
+    startX = lamp[0]
+    startY = lamp[1]
+    for i in range(startY - radius, startY + radius + 1):
+        if (i > numOfRow or i < 0):
+            break
+        for j in range(startX - 1, startX - radius - 1, -1):
+            if (j < 0 or j > numOfCol):
+                break
+            toBeIlluminated = mapOfRooms[j][i]
+            if (toBeIlluminated == '#'):
+                break
+            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-'):
+                if (toBeIlluminated == 'a'):
+                    mapOfRooms[j][i] = 'i'
+                else:
+                    if not (toBeIlluminated == 'i'):
+                        mapOfRooms[j][i] = 'a'
+
+def illuminateDown(lamp):
+    startX = lamp[0]
+    startY = lamp[1]
+    for i in range(startX - radius, startX + radius + 1):
+        if (i < 0 or i > numOfCol):
+            break
+        for j in range(startY + 1, startY + radius + 1):
+            if (j < 0 or j > numOfRow):
+                break
+            toBeIlluminated = mapOfRooms[i][j]
+            if (toBeIlluminated == '#'):
+                break
+            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-'):
+                if (toBeIlluminated == 'a'):
+                    mapOfRooms[i][j] = 'i'
+                else:
+                    if not (toBeIlluminated == 'i'):
+                        mapOfRooms[i][j] = 'a'
+
+
+def illuminateUp(lamp):
+    startX = lamp[0]
+    startY = lamp[1]
+    for i in range(startX - radius, startX + radius + 1):
+        if (i < 0 or i > numOfCol):
+            break
+        for j in range(startY, startY - radius - 1, -1):
+            if (j < 0 or j > numOfRow):
+                break
+            toBeIlluminated = mapOfRooms[i][j] 
+            if (toBeIlluminated == '#'):
+                break
+            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-'):
+                if (toBeIlluminated == 'a'):
+                    mapOfRooms[i][j] = 'i'
+                else:
+                    if not (toBeIlluminated == 'i'):
+                        mapOfRooms[i][j] = 'a'
+
+
+def returnAtoDot(lamp):
+    startX = lamp[0] - radius
+    startY = lamp[1] - radius
+    for i in range(startY, startY + 2*radius + 1):
+        if (i < 0 or i > numOfRow):
+            break
+        for j in range(startX, startX + 2*radius + 1):
+            if (j < 0 or j > numOfCol):
+                break
+            if mapOfRooms[j][i] == 'a':
+                mapOfRooms[j][i] = '.'
+
+def illuminate(lamp):
+    illuminateLeft(lamp)
+    illuminateRight(lamp)
+    illuminateUp(lamp)
+    illuminateDown(lamp)
+    returnAtoDot(lamp)
+
+def isOptimal(row, col, accuracy= 0.8):
     maxIllum = 0
 
     ## Q1
@@ -176,7 +280,10 @@ def isOptimal(row, col):
     if maxIllum >= L*L*0.8:
         #print(str(row) + ", " + str(col)),
         if (budget > 0):
-            return putLamp(row, col)
+            cost = putLamp(row, col)
+            lamp = lamps[len(lamps) - 1]
+            illuminate(lamp)
+            return cost
     else:
         return 0
 
@@ -203,15 +310,21 @@ print(len(lamps))
 print(budget)
 
 
-# create a new file for the illuminated room
 
+# create a new file for the illuminated room
+ill = 0
 newFile = open(outfilename,"a") 
 
 for row in range(numOfRow):
     line = ''
     for col in range(numOfCol):
         line += mapOfRooms[row][col]
+        if mapOfRooms[row][col] == 'i':
+            ill = ill + 1
     line+= '\n'
     newFile.write(line)
+
+print("illuminated area: ", ill)
+print("num of lamps: ", len(lamps))
 
 f.close()

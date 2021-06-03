@@ -277,8 +277,57 @@ while budget >= costOfCable and budget >= costOfBulb and accuracy >= 0:
                 if accuracy < 0.1 and budget >= costOfBulb:
                     budget -= putLamp(row, col)
                     lamp = lamps[len(lamps)-1]
+                    print(lamp)
                     illuminate(lamp)
-                budget -= isOptimal(row, col, accuracy)
+                else:
+                    budget -= isOptimal(row, col, accuracy)
+firstLamp = lamps[0]
+startX = firstLamp[0]
+startY = firstLamp[1]
+while budget > 0:
+    currentPlace = mapOfRooms[startX][startY]
+    right = mapOfRooms[startX + 1][startY]
+    left = mapOfRooms[startX - 1][startY]
+    up = mapOfRooms[startX][startY - 1]
+    down = mapOfRooms[startX][startY + 1]
+    if currentPlace == 'x':
+        if (right != '-' or right != '1'):
+            startX += 1
+        elif (left != '-' or right != '1'):
+            startX -= 1
+        elif (up != '-' or right != '1'):
+            startY -= 1
+        elif (down != '-' or right != '1'):
+            startY += 1      
+
+    if (budget == costOfCable ):
+        budget -= costOfCable
+        if (right != '-'):
+            mapOfRooms[startX][startY] = '1'
+            mapOfRooms[startX + 1][startY] = 'E'
+        elif (left != '-'):
+            mapOfRooms[startX][startY] = '1'
+            mapOfRooms[startX - 1][startY] = 'E'
+        elif (up != '-'):
+            mapOfRooms[startX][startY] = '1'
+            mapOfRooms[startX][startY - 1] = 'E'
+        elif (down != '-'):
+            mapOfRooms[startX][startY] = '1'
+            mapOfRooms[startX][startY + 1] = 'E'
+    elif (currentPlace != '-' and currentPlace != '#'):
+        budget -= costOfCable
+        if (right != '-'):
+            mapOfRooms[startX][startY] = '1'
+            mapOfRooms[startX + 1][startY] = 'E'
+        elif (left != '-'):
+            mapOfRooms[startX][startY] = '1'
+            mapOfRooms[startX - 1][startY] = 'E'
+        elif (up != '-'):
+            mapOfRooms[startX][startY] = '1'
+            mapOfRooms[startX][startY - 1] = 'E'
+        elif (down != '-'):
+            mapOfRooms[startX][startY] = '1'
+            mapOfRooms[startX][startY + 1] = 'E'
 
 
 stop = timeit.default_timer()
@@ -301,6 +350,8 @@ for row in range(numOfRow):
     line+= '\n'
     newFile.write(line)
 
+print("illuminated area: ", ill)
+print("num of lamps: ", len(lamps))
 f.close()
 newFile.close()
 print("Illuminated area is: ", ill)
