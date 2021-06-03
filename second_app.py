@@ -7,6 +7,7 @@ filename = inpName + "/" + inpName + ".txt"
 print(filename)
 outfilename = inpName + "/out" + inpName + ".txt"
 f = open(filename, "r+")
+illufilename = inpName + "/illumination" + inpName + ".txt"
 
 # helper functions
 def toCharArray(word):
@@ -143,7 +144,7 @@ def illuminateRight(lamp):
             toBeIlluminated = mapOfRooms[j][i]
             if (toBeIlluminated == '#'):
                 break
-            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-'):
+            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-' or toBeIlluminated == '1'):
                 if (toBeIlluminated == 'a'):
                     mapOfRooms[j][i] = 'i'
                 else:
@@ -162,7 +163,7 @@ def illuminateLeft(lamp):
             toBeIlluminated = mapOfRooms[j][i]
             if (toBeIlluminated == '#'):
                 break
-            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-'):
+            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-' or toBeIlluminated == '1'):
                 if (toBeIlluminated == 'a'):
                     mapOfRooms[j][i] = 'i'
                 else:
@@ -181,13 +182,13 @@ def illuminateDown(lamp):
             toBeIlluminated = mapOfRooms[i][j]
             if (toBeIlluminated == '#'):
                 break
-            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-'):
+            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-' or toBeIlluminated == '1'):
                 if (toBeIlluminated == 'a'):
                     mapOfRooms[i][j] = 'i'
                 else:
                     if not (toBeIlluminated == 'i'):
                         mapOfRooms[i][j] = 'a'
-
+ 
 
 def illuminateUp(lamp):
     startX = lamp[0]
@@ -201,7 +202,7 @@ def illuminateUp(lamp):
             toBeIlluminated = mapOfRooms[i][j] 
             if (toBeIlluminated == '#'):
                 break
-            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-'):
+            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-' or toBeIlluminated == '1'):
                 if (toBeIlluminated == 'a'):
                     mapOfRooms[i][j] = 'i'
                 else:
@@ -339,19 +340,30 @@ print("Left budget is:" ,budget)
 # create a new file for the illuminated room
 ill = 0
 
-newFile = open(outfilename,"a") 
+newFile = open(outfilename,"a")
+illuFile = open(illufilename,"a") 
 
 for row in range(numOfRow):
     line = ''
+    illuline = ''
     for col in range(numOfCol):
-        line += mapOfRooms[row][col]
         if mapOfRooms[row][col] == 'i':
+            illuline += 'i'
+            line += '.'
             ill = ill + 1
+        else:
+            if mapOfRooms[row][col] == '1':
+                ill = ill + 1
+            line += mapOfRooms[row][col]
+            illuline += mapOfRooms[row][col]
     line+= '\n'
+    illuline+= '\n'
     newFile.write(line)
+    illuFile.write(illuline)
 
 print("illuminated area: ", ill)
 print("num of lamps: ", len(lamps))
 f.close()
 newFile.close()
+illuFile.close()
 print("Illuminated area is: ", ill)
