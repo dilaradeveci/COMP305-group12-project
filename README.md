@@ -15,6 +15,7 @@
   
     
 ## How to Run the Code:
+  The program can be run through terminal by the command "python3 first_app.py" or "python3 second_app.py" depending on which verison will be run.
   After the program is run, it asks for an input (either test1, test2, test3, or test4)
   It executes the algorithm on the given test case and writes the results to a txt file 
   The output file is called outtest1.txt if the test1 is run.
@@ -22,6 +23,32 @@
 ## Result of the Test Cases:
   * We have implemented two versions.
   * The results for the test cases are provided as a txt file in the relevant the test files.
+  * With version 1 (second_app.py)
+    * The illuminated areas and number of lamps put are as follows:
+    * Test case 1:  
+      * Area: 18152
+      * Lamps: 277
+    * Test case 2:  
+      * Area: 42694
+      * Lamps: 179
+    * Test case 3: 
+      * Area: 137299
+      * Lamps: 822
+    * Test case 4: 
+      * Area: 272443
+      * Lamps: 12005
+  * With version 2 (first_app.py)
+    * The illuminated areas and number of lamps put are as follows:
+    * Test case 1:  
+      * Area: 12258
+      * Lamps: 48
+    * Test case 2:  
+      * Area: 30875
+      * Lamps: 106
+    * Test case 3:  
+      * Area: 118853
+      * Lamps: 868
+    * Test case 4: Does not terminate
   * The walls are represented with the character ”#”, cells that can be lighten up are represented with the character ".",
   * Areas that do not need any lighting are represented with "-", the cables are represented with "1", and finally, the illuminated areas are represented with "i" characters.
   * With version 1 (second_app.py)
@@ -30,7 +57,7 @@
     * Test case 2: 13.4s
     * Test case 3: 9.2s
     * Test case 4: 55.9s
-  * With version 2 (first_app.py) (the final algorithm)
+  * With version 2 (first_app.py)
     * The run times are as follows:
     * Test case 1: 2.5s
     * Test case 2: 9.9s
