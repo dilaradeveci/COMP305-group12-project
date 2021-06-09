@@ -18,7 +18,7 @@
   The program can be run through terminal by the command "python3 first_app.py" or "python3 second_app.py" depending on which verison will be run.
   After the program is run, it asks for an input (either test1, test2, test3, or test4)
   It executes the algorithm on the given test case and writes the results to a txt file 
-  The output file is called outtest1.txt if the test1 is run.
+  There are 3 output files; the one with the cables and the lamps is called outtest1.txt if the test1 is run, the one with the illuminated area which is in .txt format is called illuminationtest1.txt and finally, the visualized one in .png format is called test1.png.
       
 ## Result of the Test Cases:
   * We have implemented two versions.
