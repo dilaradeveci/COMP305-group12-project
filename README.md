@@ -22,7 +22,7 @@
       
 ## Result of the Test Cases:
   * We have implemented two versions.
-  * The results for the test cases are provided as a txt file in the relevant the test files.
+  * The results for the test cases are provided in the relevant test file in both .txt and .png format.
   * With version 1 (second_app.py)
     * The illuminated areas and number of lamps put are as follows:
     * Test case 1:  
@@ -50,6 +50,7 @@
       * Lamps: 868
     * Test case 4: Does not terminate
   * The walls are represented with the character ”#”, cells that can be lighten up are represented with the character ".",
+  * The electric source which cables should be connected to is represeted with "E"
   * Areas that do not need any lighting are represented with "-", the cables are represented with "1", and finally, the illuminated areas are represented with "i" characters.
   * With version 1 (second_app.py)
     * The run times are as follows:
