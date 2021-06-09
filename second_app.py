@@ -1,4 +1,7 @@
 import timeit
+import numpy as np
+import matplotlib.pyplot as plt
+import os
 
 ## file input
 inpName = input("Enter file name here (test1, test2, test3, test4): ")
@@ -133,51 +136,32 @@ def checkWall(startRow, startCol, endRow, endCol):
     return count
 
 def illuminateRight(lamp):
-    startX = lamp[0]
-    startY = lamp[1]
+    startX = lamp[1]
+    startY = lamp[0]
     for i in range(startY - radius, startY + radius + 1):
         if (i > numOfRow or i < 0):
             break
         for j in range(startX, startX + radius + 1):
             if (j < 0 or j > numOfCol):
                 break
-            toBeIlluminated = mapOfRooms[j][i]
+            toBeIlluminated = mapOfRooms[i][j]
             if (toBeIlluminated == '#'):
                 break
             if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-' or toBeIlluminated == '1'):
                 if (toBeIlluminated == 'a'):
-                    mapOfRooms[j][i] = 'i'
+                    mapOfRooms[i][j] = 'i'
                 else:
                     if not (toBeIlluminated == 'i'):
-                        mapOfRooms[j][i] = 'a'   
+                        mapOfRooms[i][j] = 'a'   
 
 def illuminateLeft(lamp):
-    startX = lamp[0]
-    startY = lamp[1]
+    startX = lamp[1]
+    startY = lamp[0]
     for i in range(startY - radius, startY + radius + 1):
         if (i > numOfRow or i < 0):
             break
         for j in range(startX - 1, startX - radius - 1, -1):
             if (j < 0 or j > numOfCol):
-                break
-            toBeIlluminated = mapOfRooms[j][i]
-            if (toBeIlluminated == '#'):
-                break
-            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-' or toBeIlluminated == '1'):
-                if (toBeIlluminated == 'a'):
-                    mapOfRooms[j][i] = 'i'
-                else:
-                    if not (toBeIlluminated == 'i'):
-                        mapOfRooms[j][i] = 'a'
-
-def illuminateDown(lamp):
-    startX = lamp[0]
-    startY = lamp[1]
-    for i in range(startX - radius, startX + radius + 1):
-        if (i < 0 or i > numOfCol):
-            break
-        for j in range(startY + 1, startY + radius + 1):
-            if (j < 0 or j > numOfRow):
                 break
             toBeIlluminated = mapOfRooms[i][j]
             if (toBeIlluminated == '#'):
@@ -188,39 +172,58 @@ def illuminateDown(lamp):
                 else:
                     if not (toBeIlluminated == 'i'):
                         mapOfRooms[i][j] = 'a'
+
+def illuminateDown(lamp):
+    startX = lamp[1]
+    startY = lamp[0]
+    for i in range(startX - radius, startX + radius + 1):
+        if (i < 0 or i > numOfCol):
+            break
+        for j in range(startY + 1, startY + radius + 1):
+            if (j < 0 or j > numOfRow):
+                break
+            toBeIlluminated = mapOfRooms[j][i]
+            if (toBeIlluminated == '#'):
+                break
+            if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-' or toBeIlluminated == '1'):
+                if (toBeIlluminated == 'a'):
+                    mapOfRooms[j][i] = 'i'
+                else:
+                    if not (toBeIlluminated == 'i'):
+                        mapOfRooms[j][i] = 'a'
  
 
 def illuminateUp(lamp):
-    startX = lamp[0]
-    startY = lamp[1]
+    startX = lamp[1]
+    startY = lamp[0]
     for i in range(startX - radius, startX + radius + 1):
         if (i < 0 or i > numOfCol):
             break
         for j in range(startY, startY - radius - 1, -1):
             if (j < 0 or j > numOfRow):
                 break
-            toBeIlluminated = mapOfRooms[i][j] 
+            toBeIlluminated = mapOfRooms[j][i] 
             if (toBeIlluminated == '#'):
                 break
             if not (toBeIlluminated == 'x' or toBeIlluminated == '#' or toBeIlluminated == '-' or toBeIlluminated == '1'):
                 if (toBeIlluminated == 'a'):
-                    mapOfRooms[i][j] = 'i'
+                    mapOfRooms[j][i] = 'i'
                 else:
                     if not (toBeIlluminated == 'i'):
-                        mapOfRooms[i][j] = 'a'
+                        mapOfRooms[j][i] = 'a'
 
 
 def returnAtoDot(lamp):
-    startX = lamp[0] - radius
-    startY = lamp[1] - radius
+    startX = lamp[1] - radius
+    startY = lamp[0] - radius
     for i in range(startY, startY + 2*radius + 1):
         if (i < 0 or i > numOfRow):
             break
         for j in range(startX, startX + 2*radius + 1):
             if (j < 0 or j > numOfCol):
                 break
-            if mapOfRooms[j][i] == 'a':
-                mapOfRooms[j][i] = '.'
+            if mapOfRooms[i][j] == 'a':
+                mapOfRooms[i][j] = '.'
 
 def illuminate(lamp):
     illuminateLeft(lamp)
@@ -246,7 +249,7 @@ def isOptimal(row, col, accuracy = 0.7):
         if (budget > 0):
             cost = putLamp(row, col)
             lamp = lamps[len(lamps) - 1]
-            illuminate(lamp)
+            illuminate([row, col])
             return cost
     else:
         return 0
@@ -268,20 +271,20 @@ for row in range(numOfRow):
 
 
 accuracy = 0.8
-while budget >= costOfCable and budget >= costOfBulb and accuracy >= 0:
+while budget >= costOfCable and budget >= costOfBulb and accuracy > 0:
     accuracy -= 0.1
+    if accuracy < 0.1:
+        break
     for row in range(numOfRow):
         for col in range(numOfCol):
             if mapOfRooms[row][col] == '.':
                 if budget <= 0 or budget <= costOfBulb or budget <= costOfCable:
                     break
-                if accuracy < 0.1 and budget >= costOfBulb:
-                    budget -= putLamp(row, col)
-                    lamp = lamps[len(lamps)-1]
-                    print(lamp)
-                    illuminate(lamp)
                 else:
                     budget -= isOptimal(row, col, accuracy)
+                    #print("here")
+                
+
 firstLamp = lamps[0]
 startX = firstLamp[0]
 startY = firstLamp[1]
@@ -367,3 +370,49 @@ f.close()
 newFile.close()
 illuFile.close()
 print("Illuminated area is: ", ill)
+
+
+file = illufilename
+
+area = []
+
+with open(file, "r") as f:
+    lines = f.readlines()
+    for line in lines:
+        if line[-1] == "\n":
+            line = line[:-1]
+
+        if len(line) <= 1:
+            continue
+
+        line = line.lower()
+        row = []
+        for i in range(len(line)):
+            row.append(line[i])
+        area.append(row)
+
+vals = {
+    '-': [0, 0, 0],
+    "#": [255, 0, 0],
+    "i": [255, 255, 0],
+    "İ": [255, 255, 0],
+    "I": [255, 255, 0],
+    "x": [0, 0, 255],
+    "X": [0, 0, 255],
+    "1": [255, 255, 255],
+    ".": [69, 69, 69],
+    "e": [0, 255, 0]
+}
+
+mmap = np.zeros((len(area), len(area[0]), 3))
+
+for i in range(len(area)):
+    for j in range(len(area[0])):
+        mmap[i,j,:] = vals[area[i][j]]
+
+mmap /= 255
+#mmap = mmap.transpose((1, 0, 2))
+
+plt.figure(figsize=(20, 16), dpi=80)
+plt.imshow(mmap)
+plt.savefig(inpName + "/" + inpName + ".png", bbox_inches='tight')
